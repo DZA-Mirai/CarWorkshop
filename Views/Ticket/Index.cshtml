@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Ticket>
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="album py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4">
+                    <div class="card mb-4 box-shadow">
+                        <div class="card-body">
+                            <p class="card-text">@item.Car.Brand @item.Car.Model</p>
+                            <p class="card-text">Description: @item.Description</p>
+                            @if (@item.Employee == null)
+                            {
+                                <p class="card-text">Employee: not specified yet</p>
+                            }
+                            else
+                            {
+                                <p class="card-text">Employee: @item.Employee.Name @item.Employee.Surname</p>
+                            }
+                            @if (@item.DateTimeSlots == null || @item.DateTimeSlots.Count == 0)
+                            {
+                                <p class="card-text">Start: Not specified yet</p>
+                                <p class="card-text">End: Not specified yet</p>
+                            }
+                            else{
+                                <p class="card-text">Start: @item.DateTimeSlots[0].From.Value.ToString("D")</p>
+                                <p class="card-text">End: @item.DateTimeSlots[0].Till.Value.ToString("D")</p>
+                            }
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a asp-controller="Ticket" asp-action="Detail" asp-route-id="@item.Id" type="btn btn-success" class="btn btn-sm btn-outline-secondary">View</a>
+                                    <a asp-controller="Ticket" asp-action="Edit" asp-route-id="@item.Id" type="btn btn-success" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <a asp-controller="Ticket" asp-action="Delete" asp-route-id="@item.Id" type="btn btn-success" class="btn btn-sm btn-outline-secondary">Delete</a>
+                                </div>
+                                @if(item.Employee == null)
+                                {
+                                    <small style="color:blue">Created</small>
+                                }
+                                else if(item.Employee != null && !item.IsDone && !item.IsClosed)
+                                {
+                                    <small style="color:orange">In Progress</small>
+                                }
+                                else if (item.Employee != null && item.IsDone)
+                                {
+                                    <small style="color:green">Done</small>
+                                }
+                                else if(item.IsClosed)
+                                {
+                                    <small style="color:gray">Closed</small>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

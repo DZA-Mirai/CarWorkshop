@@ -1,0 +1,90 @@
+﻿@model Employee
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<!-- Page Content -->
+<div class="container">
+    
+    <!-- Portfolio Item Heading -->
+    <h1 class="my-4">
+        @Model.Name @Model.Surname
+    </h1>
+
+    <!-- Portfolio Item Row -->
+    <div class="row">
+
+        <div class="col-md-8" style="width:30%">
+            <img class="img-fluid" src="@Model.Image" style="width:300px;height:300px;" alt="">
+        </div>
+
+        <div class="col-md-4">
+            <h4 class="my-3">Profile</h4>
+            <p>ID: @Model.Id</p>
+            <p>An hourly salary: @Model.Salary</p>
+            <h4 class="my-3">Additional information</h4>
+            <ul>
+                <li>Gender: @Model.Gender</li>
+                @if (Model.BirthDate.HasValue)
+                {
+                    DateTime today = DateTime.Today;
+                    int age = today.Year - Model.BirthDate.Value.Year;
+                    <li>Age: @age</li>
+                }
+                else
+                {
+                    <li>Age: Not specified yet</li>
+                }
+
+                @if (Model.WorkingSince.HasValue)
+                {
+                    <li>Working since: @Model.WorkingSince.Value.ToString("D")</li>
+                }
+                else
+                {   
+                    <li>Working since: Not specified yet</li>
+                }
+                @if (@Model.IsAdmin)
+                {
+                    <li>Role: Admin</li>
+                }
+                else
+                {
+                    <li>Role: Employee</li>
+                }
+
+            </ul>
+        </div>
+
+    </div>
+    <!-- /.row -->
+    <!-- Related Projects Row -->
+    <h3 class="my-4">Tickets</h3>
+
+    <div class="container">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Car</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Ticket item in Model.Tickets)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Car.Brand @item.Car.Model</td>
+                        <td>@item.Description</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->

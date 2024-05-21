@@ -1,0 +1,31 @@
+﻿@using CarWorkshop.ViewModels
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Custom styles for this template -->
+    <link href="~/css/Styles.css" rel="stylesheet">
+</head>
+
+<body class="text-center">
+    <form class="form-signin" asp-action="Index">
+        <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">You must sign in to get access</h1>
+        <input type="text" asp-for="Login" class="form-control" placeholder="Username" required autofocus>
+        <input type="password" asp-for="Password" class="form-control" placeholder="Password" required>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+</body>
+</html>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="error-summary" style="color:red">
+        @Html.ValidationSummary()
+    </div>
+}

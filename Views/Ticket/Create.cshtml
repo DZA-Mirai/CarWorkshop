@@ -1,0 +1,65 @@
+﻿@using CarWorkshop.ViewModels
+@model CreateTicketViewModel
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@{
+    var employeeList = ViewBag.Employees as SelectList;
+}
+
+<h1>Create Ticket</h1>
+
+<form method="post" asp-action="Create" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="Car.Brand">Car Brand</label>
+        <input asp-for="Car.Brand" class="form-control" placeholder="Enter Car Brand">
+        <span asp-validation-for="Car.Brand" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Car.Model">Car Model</label>
+        <input asp-for="Car.Model" class="form-control" placeholder="Enter Car Model">
+        <span asp-validation-for="Car.Model" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Car.RegId">Car Registration ID</label>
+        <input asp-for="Car.RegId" class="form-control" placeholder="Enter Registration ID">
+        <span asp-validation-for="Car.RegId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description">Description</label>
+        <input asp-for="Description" class="form-control" placeholder="Enter Description">
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="EmployeeId">Employee</label>
+        <select asp-for="EmployeeId" class="form-control" asp-items="employeeList">
+            <option value="">-- Select Employee --</option>
+        </select>
+        <span asp-validation-for="EmployeeId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="DateTimeSlots.From">From</label>
+        <input asp-for="DateTimeSlots.From" type="datetime-local" class="form-control">
+        <span asp-validation-for="DateTimeSlots.From" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="DateTimeSlots.Till">Till</label>
+        <input asp-for="DateTimeSlots.Till" type="datetime-local" class="form-control">
+        <span asp-validation-for="DateTimeSlots.Till" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Image">Car Image</label>
+        <input asp-for="Image" type="file" class="form-control" placeholder="Image">
+        <span asp-validation-for="Image" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

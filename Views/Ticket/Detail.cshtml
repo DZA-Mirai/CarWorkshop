@@ -1,0 +1,244 @@
+﻿@using CarWorkshop.ViewModels
+@model TicketVIewModel
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Portfolio Item Heading -->
+    <h1 class="my-4">
+        Ticket #@Model.Ticket.Id
+    </h1>
+
+    <!-- Portfolio Item Row -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="p-4 mb-4 bg-light border rounded">
+                <h4 class="my-3">Main Information</h4>
+                <p>Car: @Model.Ticket.Car.Brand @Model.Ticket.Car.Model</p>
+                <p>Registration ID: @Model.Ticket.Car.RegId</p>
+                <p>Description:</p>
+                <textarea>@Model.Ticket.Description</textarea>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 mb-4 bg-light border rounded">
+                <h4 class="my-3">Additional information</h4>
+                @if (Model.Ticket.Employee != null)
+                {
+                    <p>Employee: @Model.Ticket.Employee.Name @Model.Ticket.Employee.Surname</p>
+                    <a asp-controller="Ticket" asp-action="Edit" asp-route-id="@Model.Ticket.Id" type="btn btn-success" class="btn btn-sm btn-outline-secondary">Edit</a>
+                }
+                else
+                {
+                    <p>Employee: Not specified yet</p>
+                    <form method="post" asp-action="AcceptTicket">
+                        <input type="hidden" name="ticketId" value="@Model.Ticket.Id" />
+                        <button type="submit" class="btn btn-primary">Accept Ticket</button>
+                    </form>
+                }
+
+                @if (Model.Ticket.AdditionalTicketInfo == null)
+                {
+                    <p>Expected Cost: Not specified yet</p>
+                }
+                else if (Model.Ticket.AdditionalTicketInfo.ExpectedCost != 0 && Model.Ticket.AdditionalTicketInfo.PricePaid == null)
+                {
+                    <p>Expected Cost: @Model.Ticket.AdditionalTicketInfo.ExpectedCost</p>
+                }
+                else
+                {
+                    <p>Expected Cost: @Model.Ticket.AdditionalTicketInfo.ExpectedCost</p>
+                }
+                @if (Model.Ticket.IsClosed)
+                {
+                    <p>Status: Archived!</p>
+                    <button type="submit" class="btn btn-primary" disabled>Ticket is Archived</button>
+                }
+                else
+                {
+                    @if (Model.Ticket.IsDone)
+                    {
+                        int isReady = 0;
+                        <p>Status: Ready to pick up by the client!</p>
+                        <form method="post" asp-action="MarkAsDone">
+                            <input type="hidden" name="ticketId" value="@Model.Ticket.Id" />
+                            <input type="hidden" name="isReady" value="@isReady" />
+                            <button type="submit" class="btn btn-primary">Not ready yet?</button>
+                        </form>
+                    }
+                    else
+                    {
+                        int isReady = 1;
+                        <p>Status: not done yet</p>
+                        <form method="post" asp-action="MarkAsDone">
+                            <input type="hidden" name="ticketId" value="@Model.Ticket.Id" />
+                            <input type="hidden" name="isReady" value="@isReady" />
+                            <button type="submit" class="btn btn-primary">Ready to pick up?</button>
+                        </form>
+                    }
+                }
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 mb-4 bg-light border rounded">
+                <h4 class="my-3">Car Image</h4>
+                @if (Model.Ticket.Car.Image == null)
+                {
+                    <p>Not specified yet</p>
+                }
+                else
+                {
+                    <img class="img-fluid" src="@Model.Ticket.Car.Image" style="width:300px;height:300px;" alt="">
+                }
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+    <!-- Related Projects Row -->
+    
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="my-4">Purched parts and total cost</h3>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Amount</th>
+                            <th>Unit Price</th>
+                            <th>Total Cost</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Ticket.AdditionalTicketInfoId != null)
+                        {
+                            @foreach (Part item in Model.Ticket.AdditionalTicketInfo.Parts)
+                            {
+                                double? totalCost = item.Amount * item.UnitPrice;
+                                <tr>
+                                    <td>@item.PartName</td>
+                                    <td>@item.Amount</td>
+                                    <td>@item.UnitPrice PLN</td>
+                                    <td>@totalCost PLN</td>
+                                    <form method="post" asp-action="RemovePart">
+                                        <input type="hidden" name="slotId" value="@item.Id" />
+                                        <input type="hidden" name="ticketId" value="@Model.Ticket.Id" />
+                                        <td><button type="submit" class="btn btn-sm btn-outline-secondary">Remove</button></td>
+                                    </form>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+                @if(Model.Ticket.IsDone || Model.Ticket.IsClosed)
+                {
+                    <button type="btn btn-success" class="btn btn-primary" disabled>Ticket is Done or Archived</button>
+                }
+                else
+                {
+                    <a asp-controller="Ticket" asp-action="AddParts" asp-route-id="@Model.Ticket.Id" type="btn btn-success" class="btn btn-primary">Add Parts</a>
+                }
+            </div>
+            <div class="col-md-6">
+                <h3 class="my-4">Time Slots</h3>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>From</th>
+                            <th>Till</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Ticket.DateTimeSlots != null)
+                        {
+                            @foreach (DateTimeSlot item in Model.Ticket.DateTimeSlots)
+                            {
+                                <tr>
+                                    <td>@item.From</td>
+                                    <td>@item.Till</td>
+                                    <form method="post" asp-action="RemoveDate">
+                                        <input type="hidden" name="slotId" value="@item.Id" />
+                                        <input type="hidden" name="ticketId" value="@Model.Ticket.Id" />
+                                        <td><button type="submit" class="btn btn-sm btn-outline-secondary">Remove</button></td>
+                                    </form>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+                <form method="post" asp-action="AddDate">
+                    <div class="row">
+                        <div class="form-group" style="width:50%">
+                            <label asp-for="NewDateTimeSlot.From">From</label>
+                            <input asp-for="NewDateTimeSlot.From" type="datetime-local" class="form-control">
+                            <span asp-validation-for="NewDateTimeSlot.From" class="text-danger"></span>
+                        </div>
+                        <div class="form-group" style="width:50%">
+                            <label asp-for="NewDateTimeSlot.Till">Till</label>
+                            <input asp-for="NewDateTimeSlot.Till" type="datetime-local" class="form-control">
+                            <span asp-validation-for="NewDateTimeSlot.Till" class="text-danger"></span>
+                        </div>
+                    </div>
+                    @for (int i = 0; i < Model.Ticket.DateTimeSlots?.Count; i++)
+                    {
+                        <input type="hidden" asp-for="Ticket.DateTimeSlots[i].From" />
+                        <input type="hidden" asp-for="Ticket.DateTimeSlots[i].Till" />
+                    }
+                    <input type="hidden" asp-for="Ticket.Id" value="@Model.Ticket.Id" />
+                    <input type="hidden" asp-for="Ticket.Description" value="@Model.Ticket.Description" />
+                    <input type="hidden" asp-for="Ticket.CarId" value="@Model.Ticket.CarId" />
+                    <input type="hidden" asp-for="Ticket.Car.Brand" value="@Model.Ticket.Car.Brand" />
+                    <input type="hidden" asp-for="Ticket.Car.Model" value="@Model.Ticket.Car.Model" />
+                    <input type="hidden" asp-for="Ticket.Car.RegId" value="@Model.Ticket.Car.RegId" />
+                    <input type="hidden" asp-for="Ticket.Car.Image" value="@Model.Ticket.Car.Image" />
+                    <input type="hidden" asp-for="Ticket.EmployeeId" value="@Model.Ticket.EmployeeId" />
+                    <input type="hidden" asp-for="Ticket.Employee" value="@Model.Ticket.Employee" />
+                    <input type="hidden" asp-for="Ticket.IsDone" value="@Model.Ticket.IsDone" />
+                    <input type="hidden" asp-for="Ticket.IsClosed" value="@Model.Ticket.IsClosed" />
+                    <input type="hidden" asp-for="Ticket.AdditionalTicketInfo" value="@Model.Ticket.AdditionalTicketInfo" />
+                    <input type="hidden" asp-for="Ticket.AdditionalTicketInfoId" value="@Model.Ticket.AdditionalTicketInfoId" />
+                    <p></p>
+                    @if (Model.Ticket.IsDone || Model.Ticket.IsClosed)
+                    {
+                        <button type="submit" class="btn btn-primary" disabled>Ticket is Done or Archived</button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-primary">Add new time slot</button>
+                    }
+
+                </form> 
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-md-10"></div>
+        <div class="col-md-2">
+            @if (Model.Ticket.IsClosed)
+            {
+                int isClosed = 0;
+                <form method="post" asp-action="Archive">
+                    <input type="hidden" name="ticketId" value="@Model.Ticket.Id" />
+                    <input type="hidden" name="isClosed" value="@isClosed" />
+                    <button type="submit" class="btn btn-primary">Return from Archived</button>
+                </form>
+            }
+            else
+            {
+                int isClosed = 1;
+                <form method="post" asp-action="Archive">
+                    <input type="hidden" name="ticketId" value="@Model.Ticket.Id" />
+                    <input type="hidden" name="isClosed" value="@isClosed" />
+                    <button type="submit" class="btn btn-primary">Close and Archive</button>
+                </form>
+            }
+        </div>
+    </div>
+
+</div>
+<!-- /.container -->
